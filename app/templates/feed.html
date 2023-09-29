@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container col-4 border mt-5">
+    {% for p in posts %}
+        <a href="/pokemon/{{ pokemon.id }}" class="card mb-3 text-decoration-none" style="width: 18rem;">
+            <img src="{{ sprite }}" class="card-img-top">
+            <div class="card-body">
+                <h5 class="card-title">{{ name }}</h5>
+                <h5 class="card-title">{{ name }}</h5>
+                <p class="card-text">base experience: {{  base_experience }}</p>
+                <p class="card-text">ability name: {{ ability_name }}</p>
+                <p class="card-text">attack: {{ attack }}</p>
+                <p class="card-text">hp: {{ hp }}</p>
+                <p class="card-text">defense: {{ defense }}</p>
+
+            </div>
+            
+        </a>
+    {% endfor %}
+</div>
+{% endblock %}
