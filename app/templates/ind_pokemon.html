@@ -2,18 +2,19 @@
 
 {% block content %}
 <div class="container col-4 border mt-5">
+    {% if pokemon %}
     <div class="card mb-3" style="width: 18rem;">
-        <img src="{{ sprite }}" class="card-img-top">
+        <img src="{{ pokemon.sprite }}" class="card-img-top">
         <div class="card-body">
-            <h5 class="card-title">{{ name }}</h5>
-            <p class="card-text">base experience: {{  base_experience }}</p>
-            <p class="card-text">ability name: {{ ability_name }}</p>
-            <p class="card-text">attack: {{ attack }}</p>
-            <p class="card-text">hp: {{ hp }}</p>
-            <p class="card-text">defense: {{ defense }}</p>
+            <h5 class="card-title">{{ pokemon.name }}</h5>
+            <p class="card-text">base experience: {{  pokemon.base_experience }}</p>
+            <p class="card-text">ability name: {{ pokemon.ability_name }}</p>
+            <p class="card-text">attack: {{ pokemon.attack }}</p>
+            <p class="card-text">hp: {{ pokemon.hp }}</p>
+            <p class="card-text">defense: {{ pokemon.defense }}</p>
            
         </div>
-       
+      {% endif %} 
     </div>
     
      

@@ -30,22 +30,20 @@ def signup_page():
             db.session.add(user)
             db.session.commit()
 
-
+            return redirect(url_for('index'))
     return render_template('signup.html', form=form)
 
 
 @app.route("/login", methods=["GET", "POST"])
 def login_page():
-    if current_user.is_authenticated:
-        return redirect(url_for('index'))
     form = LoginForm()
     if request.method == 'POST':
         if form.validate():
-            username = form.username.data
+            email = form.email.data
             password = form.password.data
 
             # Look in the database for a user with that username
-            user = User.query.filter_by(username=username).first() 
+            user = User.query.filter_by(email=email).first() 
             # if they exist, see if the password match
             if user:
                 if user.password == password:
@@ -68,35 +66,55 @@ def logout():
 def search_page():
     form= SearchForm()
     if request.method == 'POST': 
-        if Pokemon == True:
-            return render_template("ind_pokemon.html")
-        else:
-            flash('That pokemon does not exist', 'danger')
-            return redirect("search.html")
+        if form.validate():
+            name = form.name.data
+            found = Pokemon.query.filter_by(name=name).first()
+            if found:
+                print("from database")
+                return render_template("ind_pokemon.html", pokemon=found)
+            else:
+                print("from api")
+                url= f"https://pokeapi.co/api/v2/pokemon/{name}"
+                response = r.get(url)
+                if response.ok:
+                    data= response.json()
+                    p = {
+                        'name': data['name'],
+                        'base_experience': data['base_experience'],
+                        'ability_name': data["abilities"][0]["ability"]["name"],
+                        'sprite': data["sprites"]["front_shiny"],
+                        'attack': data["stats"][1]["base_stat"],
+                        'hp' : data["stats"][0]["base_stat"],
+                        'defense' : data["stats"][2]["base_stat"],
+                        }
+                    pokemon= Pokemon(name=p['name'], base_experience=p["base_experience"], ability_name=p["ability_name"], sprite=p["sprite"], attack=p["attack"], hp=p['hp'], defense=p["defense"])
+                    db.session.add(pokemon)
+                    db.session.commit()
+                    return render_template('ind_pokemon.html', pokemon=pokemon)
+            
     return render_template("search.html", form=form)
                  
         
         
         
-@app.route("/search/<pokemon_id>")
-@login_required
-def get_pokemon(pokemon_id):
-    pokemon = Pokemon.query.get(pokemon_id)
-    url= f"https://pokeapi.co/api/v2/pokemon/{pokemon_id}"
+@app.route("/search/<Pokemon_name>")
+def get_pokemon(Pokemon_name):
+    pokemon = Pokemon.query.get(Pokemon_name)
+    url= f"https://pokeapi.co/api/v2/pokemon/{Pokemon_name}"
     response = r.get(url)
     if response.ok:
         data= response.json()
-
-        name = data['species']['name']
-        base_experience = data['base_experience']
-        ability_name = data["abilities"][0]["ability"]["name"]
-        sprite = data["sprites"]["front_shiny"]
-        attack = data["stats"][1]["base_stat"]
-        hp = data["stats"][0]["base_stat"]
-        defense = data["stats"][2]["base_stat"]
+        my_pokemon = {
+            'name': data['species']['name'],
+            'base_experience': data['base_experience'],
+            'ability_name': data["abilities"][0]["ability"]["name"],
+            'sprite': data["sprites"]["front_shiny"],
+            'attack': data["stats"][1]["base_stat"],
+            'hp' : data["stats"][0]["base_stat"],
+            'defense' : data["stats"][2]["base_stat"],
+            }
         #return f'(name: {name}, base experience: {base_experience}, ability name: {ability_name}, sprite: {sprite}, attack: {attack}, hp: {hp}, defense: {defense})'
-        return render_template("ind_pokemon.html", name=name, base_experience=base_experience, ability_name=ability_name, sprite=sprite, hp=hp, attack=attack, defense=defense )               
-
+        return render_template("ind_pokemon.html", my_pokemon=my_pokemon)  
           
                
             #print(name, base_experience, ability_name, hp, attack, sprite, defense)
