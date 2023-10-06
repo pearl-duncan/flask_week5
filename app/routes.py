@@ -14,9 +14,10 @@ def index():
 
 @app.route("/signup", methods=["GET", "POST"])
 def signup_page():
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
     form=SignUpForm()
     if request.method == 'POST':
-        print("post request made")
         if form.validate():
             username = form.username.data
             email = form.email.data
@@ -30,12 +31,18 @@ def signup_page():
             db.session.add(user)
             db.session.commit()
 
-            return redirect(url_for('index'))
+            flash('Successfully created your account. Log in now.', "success")
+            return redirect(url_for('login_page'))
+        else:
+            flash('Invalid form. Please try again.', 'error')
+            
     return render_template('signup.html', form=form)
 
 
 @app.route("/login", methods=["GET", "POST"])
 def login_page():
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
     form = LoginForm()
     if request.method == 'POST':
         if form.validate():
@@ -49,12 +56,12 @@ def login_page():
                 if user.password == password:
             # if passwords match, consider them logged in
                     login_user(user)
+                    flash('Successfully logged in.', 'success')
+                    return redirect(url_for('index'))
                 else:
-                    print('passwords dont match')
+                    flash('Incorrect username/password combination.', 'danger')
             else:
-                print('that user doesnt exist')
-
-        return redirect(url_for('index'))
+                flash('That username does not exist.', 'danger')
     return render_template('login.html', form = form)
 
 @app.route('/logout')
@@ -116,14 +123,34 @@ def get_pokemon(Pokemon_name):
         #return f'(name: {name}, base experience: {base_experience}, ability name: {ability_name}, sprite: {sprite}, attack: {attack}, hp: {hp}, defense: {defense})'
         return render_template("ind_pokemon.html", my_pokemon=my_pokemon)  
           
-               
-            #print(name, base_experience, ability_name, hp, attack, sprite, defense)
-             
-                
+@app.route("/catch/pokemon_id")
+@login_required
+def caught_pokemon(pokemon_id):
+    pokemon = Pokemon.query.get(pokemon_id)
+    if pokemon:
+        print(pokemon.caught)
+        pokemon.caught.append(current_user)
+        db.session.commit()
+    return redirect(url_for('team', pokemon_id=pokemon_id))
+
+@app.route('/delete/pokemon_id')
+@login_required
+def delete_pokemon(pokemon_id):
+    pokemon = Pokemon.query.get(pokemon_id)
+    if not pokemon:
+        flash('That post does not exist', 'danger')
+        return redirect(url_for('team'))
+    if current_user.id != pokemon.user_id:
+        flash('You cannot delete another user\'s catches', 'danger')
+        return redirect(url_for('ind_pokemon', post_id=pokemon_id))
     
-     
-#pokemon_name=small_dictionary
+    db.session.delete(pokemon)
+    db.session.commit()
+    flash('Successfully deleted your pokemon', 'success')
+    return redirect(url_for('team'))
 
-#small_dictionary = get_pokemon(pokemon_name)
-
-
+@app.route('/team')
+@login_required
+def team():
+    pokemon = Pokemon.query.order_by(Pokemon.name).all()
+    return render_template('team.html', pokemon=pokemon)

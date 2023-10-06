@@ -7,16 +7,19 @@
         <img src="{{ pokemon.sprite }}" class="card-img-top">
         <div class="card-body">
             <h5 class="card-title">{{ pokemon.name }}</h5>
-            <p class="card-text">base experience: {{  pokemon.base_experience }}</p>
-            <p class="card-text">ability name: {{ pokemon.ability_name }}</p>
-            <p class="card-text">attack: {{ pokemon.attack }}</p>
-            <p class="card-text">hp: {{ pokemon.hp }}</p>
-            <p class="card-text">defense: {{ pokemon.defense }}</p>
-           
+                <ul class="list-group list-group-flush">
+                  <li class="list-group-item">base experience: {{  pokemon.base_experience }}</li>
+                  <li class="list-group-item">ability name: {{ pokemon.ability_name }}</li>
+                  <li class="list-group-item">attack: {{ pokemon.attack }}</li>
+                  <li class="list-group-item">hp: {{ pokemon.hp }}</li>
+                  <li class="list-group-item">defense: {{ pokemon.defense }}</li>
+                </ul>
+                <div class="card-footer">
+                    <a href="/team" class="btn btn-warning">Catch</a>
+                </div>
+            </div>
         </div>
       {% endif %} 
-    </div>
-    
-     
+    </div> 
 </div>
 {% endblock %}

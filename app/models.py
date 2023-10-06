@@ -36,3 +36,8 @@ class Pokemon(db.Model):
         self.attack = attack
         self.hp = hp
         self.defense = defense
+
+caught = db.Table('caught',
+    db.Column('user_id', db.Integer, db.ForeignKey('user.id'), nullable=False, primary_key=True),
+    db.Column('pokemon_id', db.Integer, db.ForeignKey('pokemon.id'), nullable=False, primary_key=True),
+    )
