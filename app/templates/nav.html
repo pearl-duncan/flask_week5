@@ -16,7 +16,7 @@
           <li class="nav-item">
             <a class="nav-link disabled" aria-disabled="true">Hi, {{ current_user.username }}</a>
           </li>
-           {% endif %}
+           
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" 
             href="#" 
@@ -32,16 +32,17 @@
               <li><a class="dropdown-item" href="/search">Search</a></li>
             </ul>
           </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/people">Find someone to battle</a>
+          </li>
+          {% endif %}
           {% if current_user.is_authenticated %}
           <li class="nav-item">
             <a class="nav-link" href="/team">Team</a>
           </li>
           {% endif %}
         </ul>
-        <form class="d-flex" role="search">
-          <input class="form-control me-2" href="/search" placeholder="Search for a Pokemon" aria-label="Search">
-          <button class="btn btn-outline-success">Search</button>
-        </form>
+        
       </div>
     </div>
   </nav>

@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container col-4 border mt-5">
+<div class="container col-sm-6 mb-3 mb-sm-0">
     {% if pokemon %}
     <div class="card mb-3" style="width: 18rem;">
         <img src="{{ pokemon.sprite }}" class="card-img-top">
@@ -15,7 +15,7 @@
                   <li class="list-group-item">defense: {{ pokemon.defense }}</li>
                 </ul>
                 <div class="card-footer">
-                    <a href="/team" class="btn btn-warning">Catch</a>
+                    <a href="/catch/{{ pokemon.name }}" class="btn btn-warning">Catch</a>
                 </div>
             </div>
         </div>

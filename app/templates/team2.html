@@ -1,8 +1,4 @@
-{% extends 'base.html' %}
-
 {% block content %}
-
-<h1> {{ current_user.username }}'s team, go back to search page to catch more!</h>
 <div class="container col-3 border mt-5>
    
         <div class="col-sm-6 mb-3 mb-sm-0">
@@ -21,30 +17,12 @@
                                 <li class="list-group-item">defense: {{ pokemon.defense }}</li>
                             </ul>
                     <div class="card-footer">
-                    <a href="/battle/" class="btn btn-warning">Battle</a>
+                    <a href="#" class="btn btn-warning">Battle</a>
                     <a href="/delete/{{ pokemon.name }}" class="btn btn-danger">delete</a>
                  {% endfor %}
                 </div>
             </div>    
         </div> 
-</div>
-
-
-<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-    <div class="modal-content">
-        <div class="modal-header">
-        <h1 class="modal-title fs-5" id="exampleModalLabel">Are you sure you want to delete this pokemon?</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-        This action cannot be undone.
-        </div>
-        <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-        <a type="button" class="btn btn-danger" href="{{ url_for('delete_pokemon', pokemon_id=pokemon.id) }}">Delete</a>
-        </div>
-    </div>
-    </div>
+   
 </div>
 {% endblock %}

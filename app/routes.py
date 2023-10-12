@@ -46,11 +46,11 @@ def login_page():
     form = LoginForm()
     if request.method == 'POST':
         if form.validate():
-            email = form.email.data
+            username = form.username.data
             password = form.password.data
 
             # Look in the database for a user with that username
-            user = User.query.filter_by(email=email).first() 
+            user = User.query.filter_by(username=username).first() 
             # if they exist, see if the password match
             if user:
                 if user.password == password:
@@ -123,22 +123,22 @@ def get_pokemon(Pokemon_name):
         #return f'(name: {name}, base experience: {base_experience}, ability name: {ability_name}, sprite: {sprite}, attack: {attack}, hp: {hp}, defense: {defense})'
         return render_template("ind_pokemon.html", my_pokemon=my_pokemon)  
           
-@app.route("/catch/pokemon_id")
+@app.route("/catch/<pokemon_id>")
 @login_required
 def caught_pokemon(pokemon_id):
-    pokemon = Pokemon.query.get(pokemon_id)
-    if pokemon:
-        print(pokemon.caught)
-        pokemon.caught.append(current_user)
+    pokemon = Pokemon.query.filter_by(name=pokemon_id).first()
+    if pokemon and len(current_user.pokemon) < 5:
+        flash('caught pokemon')
+        current_user.pokemon.append(pokemon)
         db.session.commit()
     return redirect(url_for('team', pokemon_id=pokemon_id))
 
-@app.route('/delete/pokemon_id')
+@app.route('/delete/<pokemon_id>')
 @login_required
 def delete_pokemon(pokemon_id):
-    pokemon = Pokemon.query.get(pokemon_id)
+    pokemon = Pokemon.query.filter_by(name=pokemon_id).first()
     if not pokemon:
-        flash('That post does not exist', 'danger')
+        flash('That pokemon does not exist', 'danger')
         return redirect(url_for('team'))
     if current_user.id != pokemon.user_id:
         flash('You cannot delete another user\'s catches', 'danger')
@@ -152,5 +152,40 @@ def delete_pokemon(pokemon_id):
 @app.route('/team')
 @login_required
 def team():
-    pokemon = Pokemon.query.order_by(Pokemon.name).all()
+    pokemon = current_user.pokemon
     return render_template('team.html', pokemon=pokemon)
+
+@app.route('/people')
+@login_required
+def people_page():
+    users = User.query.order_by(User.username).filter(User.username != current_user.username).all()
+    caught_pokemon = Pokemon.query.order_by(Pokemon.name).all()
+
+    return render_template('people.html', users=users, pokemon=caught_pokemon)
+
+
+@app.route('/battle/<user_id>')
+@login_required
+def battle_page(user_id):
+    opponent = User.query.filter_by(id=user_id).first()
+    opponent_hp=0
+    opponent_attack=0
+    opponent_defense=0
+    for pokemon in opponent.pokemon:
+        opponent_hp += int(pokemon.hp)
+        opponent_attack += int(pokemon.attack)
+        opponent_defense += int(pokemon.defense)
+   
+    current_user_hp=0
+    current_user_attack=0
+    current_user_defense=0
+    for pokemon in current_user.pokemon:
+        current_user_hp += int(pokemon.hp)
+        current_user_attack += int(pokemon.attack)
+        current_user_defense += int(pokemon.defense)
+
+    current_user_finish=current_user_hp + current_user_defense - opponent_attack
+    opponent_finish = opponent_hp + opponent_defense - current_user_attack
+
+    return "i win" if current_user_finish > opponent_finish else "opponent wins"
+     

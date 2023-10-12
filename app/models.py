@@ -4,6 +4,13 @@ from flask_login import UserMixin
 
 db = SQLAlchemy()
 
+
+#battle = db.Table('battle', 
+   # db.Column('battler_id', db.Integer, db.ForeignKey('user.id'), nullable=False),
+   # db.Column('battled_id', db.Integer, db.ForeignKey('user.id'), nullable=False)
+    #)
+
+
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(45), nullable=False, unique=True)
@@ -13,6 +20,8 @@ class User(db.Model, UserMixin):
     first_name = db.Column(db.String(45))
     last_name = db.Column(db.String(45)) 
 
+    pokemon = db.relationship('Pokemon', backref='catcher', secondary= "caught")
+    
     def __init__(self, username, email, password):
         self.username = username
         self.email = email
@@ -28,6 +37,7 @@ class Pokemon(db.Model):
     hp = db.Column(db.String(100), nullable=False)
     defense = db.Column(db.String(100), nullable=False)
 
+
     def __init__(self, name, base_experience, ability_name, sprite, attack, hp, defense):
         self.name = name
         self.ability_name = ability_name
@@ -41,3 +51,4 @@ caught = db.Table('caught',
     db.Column('user_id', db.Integer, db.ForeignKey('user.id'), nullable=False, primary_key=True),
     db.Column('pokemon_id', db.Integer, db.ForeignKey('pokemon.id'), nullable=False, primary_key=True),
     )
+
